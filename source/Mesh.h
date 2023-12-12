@@ -1,0 +1,34 @@
+#pragma once
+#include "EffectWrapper.h"
+#include <vector>
+
+struct Vertex;
+
+class Mesh final
+{
+public:
+
+	Mesh() = default;
+	~Mesh();
+
+	Mesh(const Mesh&) = delete;
+	Mesh(Mesh&&) noexcept = delete;
+	Mesh& operator=(const Mesh&) = delete;
+	Mesh& operator=(Mesh&&) noexcept = delete;
+
+	void Initialize(ID3D11Device* pDevice, std::vector<Vertex> vertices, std::vector<uint32_t> indices);
+
+	void Render(ID3D11DeviceContext* pDeviceContext) const;
+private:
+	EffectWrapper* m_pEffect;
+	ID3D11InputLayout* m_pInputLayout;
+	ID3D11Buffer* m_pVertexBuffer;
+	ID3D11Buffer* m_pIndexBuffer;
+	uint32_t m_NumIndices;
+};
+
+struct Vertex final
+{
+	float position[3]{};
+	float color[3]{};
+};

@@ -6,6 +6,7 @@ namespace dae {
 	Renderer::Renderer(SDL_Window* pWindow) :
 		m_pWindow(pWindow)
 	{
+		
 		//Initialize
 		SDL_GetWindowSize(pWindow, &m_Width, &m_Height);
 
@@ -20,6 +21,23 @@ namespace dae {
 		{
 			std::cout << "DirectX initialization failed!\n";
 		}
+
+		//std::vector<Vertex> vertices
+		//{
+		//	{{0.f,0.5f,0.5f},{1.f,0.f,0.f}},
+		//	{{0.5f,-0.5f,0.5f},{0.f, 0.f, 1.f}},
+		//	{{-0.5f,-0.5f,0.5f},{0.f,1.f,0.f}}
+		//};
+
+		std::vector<Vertex> vertices
+		{
+			{{0,3,2},{1.f,0.f,0.f}},
+			{{3, -3, 2},{0.f, 0.f, 1.f}},
+			{{-3, -3, 2},{0.f,1.f,0.f}}
+		};
+		std::vector<uint32_t> indices{ 0, 1, 2 };
+		m_Mesh.Initialize(m_pDevice, vertices, indices);
+		m_Camera.Initialize(m_Width, m_Height, 45.f, { 0.f,0.f,-10.f });
 	}
 
 	Renderer::~Renderer()
@@ -60,19 +78,9 @@ namespace dae {
 
 		//2. Set Pipeline and Invoke Draw Calls
 
-		static constexpr uint32_t numElements{ 2 };
-		D3D11_INPUT_ELEMENT_DESC vertexDesc[numElements]{};
-
-		vertexDesc[0].SemanticName = "POSITION";
-		vertexDesc[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-		vertexDesc[0].AlignedByteOffset = 0;
-		vertexDesc[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-
-		vertexDesc[1].SemanticName = "COLOR";
-		vertexDesc[1].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-		vertexDesc[1].AlignedByteOffset = 12;
-		vertexDesc[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-
+		Matrix worldViewProjectionMatrix{ m_Camera.GetViewMatrix() * m_Camera.GetProjectionMatrix() };
+		
+		m_Mesh.Render(m_pDeviceContext);
 		
 		
 		//3. Present Backbuffer
