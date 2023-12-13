@@ -44,7 +44,7 @@ namespace dae
 							 {0, 0, -(m_Far * m_Near) / (m_Far - m_Near), 0} };
 	}
 
-	void Camera::Update(Timer* pTimer)
+	void Camera::Update(const Timer* pTimer)
 	{
 		const float deltaTime = pTimer->GetElapsed();
 		//Keyboard Input

@@ -21,7 +21,7 @@ namespace dae
 		void CalculateViewMatrix();
 		void CalculateProjectionMatrix();
 
-		void Update(Timer* pTimer);
+		void Update(const Timer* pTimer);
 
 		void HandleKeyMovement(const uint8_t* keys, float elapsedSec);
 		void TransformForwardVector();
@@ -44,7 +44,7 @@ namespace dae
 		float m_TotalPitch{};
 		float m_TotalYaw{};
 
-		float m_TranslateSpeed{ 10.f };
+		const float m_TranslateSpeed{ 10.f };
 
 		Matrix m_InvViewMatrix{};
 		Matrix m_ViewMatrix{};

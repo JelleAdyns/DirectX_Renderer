@@ -1,5 +1,5 @@
 #pragma once
-class dae::Matrix;
+struct dae::Matrix;
 class EffectWrapper final
 {
 public:
@@ -14,7 +14,8 @@ public:
 
 	ID3DX11Effect* GetEffect() const;
 	ID3DX11EffectTechnique* GetTechinque() const;
-	void SetMatrix(dae::Matrix);
+	ID3DX11EffectMatrixVariable* GetWVPMatrix() const;
+	void SetMatrix(const dae::Matrix& worldViewProjMatrix);
 
 private:
 	static ID3DX11Effect* LoadEffect(ID3D11Device* pDevice, const std::wstring& assetFile);

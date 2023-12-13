@@ -32,9 +32,23 @@ ID3DX11EffectTechnique* EffectWrapper::GetTechinque() const
 {
 	return m_pTechinque;
 }
-void EffectWrapper::SetMatrix(dae::Matrix)
+ID3DX11EffectMatrixVariable* EffectWrapper::GetWVPMatrix() const
 {
-	//m_pMatWorldViewProjVariable->SetMatrix() = m_pEffect->Se("gWorldViewProj")->AsMatrix();
+	return m_pMatWorldViewProjVariable;
+}
+void EffectWrapper::SetMatrix(const dae::Matrix& worldViewProjMatrix)
+{
+	constexpr int numOfRows{ 4 };
+	constexpr int numOfCols{ 4 };
+	float arrayMatrix[numOfCols * numOfRows]{};
+	for (int row = 0; row < numOfRows; ++row)
+	{
+		for (int col = 0; col < numOfRows; ++col)
+		{
+			arrayMatrix[col + row * numOfCols] = worldViewProjMatrix[row][col];
+		}
+	}
+	m_pMatWorldViewProjVariable->SetMatrix(arrayMatrix);
 }
 
 ID3DX11Effect* EffectWrapper::LoadEffect(ID3D11Device* pDevice, const std::wstring& assetFile)

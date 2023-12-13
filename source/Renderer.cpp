@@ -22,12 +22,12 @@ namespace dae {
 			std::cout << "DirectX initialization failed!\n";
 		}
 
-		//std::vector<Vertex> vertices
-		//{
-		//	{{0.f,0.5f,0.5f},{1.f,0.f,0.f}},
-		//	{{0.5f,-0.5f,0.5f},{0.f, 0.f, 1.f}},
-		//	{{-0.5f,-0.5f,0.5f},{0.f,1.f,0.f}}
-		//};
+		/*std::vector<Vertex> vertices
+		{
+			{{0.f,0.5f,0.5f},{1.f,0.f,0.f}},
+			{{0.5f,-0.5f,0.5f},{0.f, 0.f, 1.f}},
+			{{-0.5f,-0.5f,0.5f},{0.f,1.f,0.f}}
+		};*/
 
 		std::vector<Vertex> vertices
 		{
@@ -61,7 +61,7 @@ namespace dae {
 
 	void Renderer::Update(const Timer* pTimer)
 	{
-
+		m_Camera.Update(pTimer);
 	}
 
 
@@ -79,7 +79,7 @@ namespace dae {
 		//2. Set Pipeline and Invoke Draw Calls
 
 		Matrix worldViewProjectionMatrix{ m_Camera.GetViewMatrix() * m_Camera.GetProjectionMatrix() };
-		
+		m_Mesh.SetMatrix(worldViewProjectionMatrix);
 		m_Mesh.Render(m_pDeviceContext);
 		
 		

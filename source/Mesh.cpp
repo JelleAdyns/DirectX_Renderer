@@ -86,3 +86,8 @@ void Mesh::Render(ID3D11DeviceContext* pDeviceContext) const
 	}
 
 }
+
+void Mesh::SetMatrix(const dae::Matrix& worldViewProjMatrix) const
+{
+	m_pEffect->SetMatrix(worldViewProjMatrix);
+}

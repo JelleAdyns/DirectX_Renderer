@@ -19,6 +19,7 @@ public:
 	void Initialize(ID3D11Device* pDevice, std::vector<Vertex> vertices, std::vector<uint32_t> indices);
 
 	void Render(ID3D11DeviceContext* pDeviceContext) const;
+	void SetMatrix(const dae::Matrix& worldViewProjMatrix) const;
 private:
 	EffectWrapper* m_pEffect;
 	ID3D11InputLayout* m_pInputLayout;
