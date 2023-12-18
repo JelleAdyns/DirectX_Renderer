@@ -3,6 +3,8 @@
 #include <vector>
 
 struct Vertex;
+struct dae::Matrix;
+
 
 class Mesh final
 {
@@ -20,6 +22,7 @@ public:
 
 	void Render(ID3D11DeviceContext* pDeviceContext) const;
 	void SetMatrix(const dae::Matrix& worldViewProjMatrix) const;
+	void SetDiffuseMap(const Texture* pTexture) const;
 private:
 	EffectWrapper* m_pEffect;
 	ID3D11InputLayout* m_pInputLayout;
@@ -32,4 +35,5 @@ struct Vertex final
 {
 	float position[3]{};
 	float color[3]{};
+	float UV[2]{};
 };

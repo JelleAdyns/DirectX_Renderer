@@ -3,6 +3,7 @@
 #include "Camera.h"
 struct SDL_Window;
 struct SDL_Surface;
+class Texture;
 
 namespace dae
 {
@@ -32,6 +33,7 @@ namespace dae
 
 		bool m_IsInitialized{ false };
 
+		Texture* m_pTexture{ nullptr };
 		//DIRECTX
 		HRESULT InitializeDirectX();
 

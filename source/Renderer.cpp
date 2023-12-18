@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Renderer.h"
+#include "Texture.h"
 
 namespace dae {
 
@@ -15,13 +16,13 @@ namespace dae {
 		if (result == S_OK)
 		{
 			m_IsInitialized = true;
-			std::cout << "DirectX is initialized and ready!\n";
+			std::wcout << L"DirectX is initialized and ready!\n";
 		}
 		else
 		{
-			std::cout << "DirectX initialization failed!\n";
+			std::wcout << L"DirectX initialization failed!\n";
 		}
-
+		m_pTexture = new Texture{ "Resources/uv_grid_2.png",m_pDevice };
 		/*std::vector<Vertex> vertices
 		{
 			{{0.f,0.5f,0.5f},{1.f,0.f,0.f}},
@@ -29,13 +30,27 @@ namespace dae {
 			{{-0.5f,-0.5f,0.5f},{0.f,1.f,0.f}}
 		};*/
 
-		std::vector<Vertex> vertices
+		/*std::vector<Vertex> vertices
 		{
 			{{0,3,2},{1.f,0.f,0.f}},
 			{{3, -3, 2},{0.f, 0.f, 1.f}},
 			{{-3, -3, 2},{0.f,1.f,0.f}}
+		};*/
+		std::vector<Vertex> vertices
+		{
+			Vertex{{-3,  3, -2},{1.f,1.f,1.f},{0.f,0.f}},
+				Vertex{{ 0,  3, -2},{1.f,1.f,1.f},{ 0.5f, 0.f}},
+				Vertex{{ 3,  3, -2},{1.f,1.f,1.f},{ 1, 0.f}},
+				Vertex{{-3,  0, -2},{1.f,1.f,1.f},{0.f, 0.5f}},
+				Vertex{{ 0,  0, -2},{1.f,1.f,1.f},{0.5f, 0.5f}},
+				Vertex{{ 3,  0, -2},{1.f,1.f,1.f},{1, 0.5f}},
+				Vertex{{-3, -3, -2},{1.f,1.f,1.f},{0.f, 1.f}},
+				Vertex{{ 0, -3, -2},{1.f,1.f,1.f},{0.5f, 1.f}},
+				Vertex{{ 3, -3, -2},{1.f,1.f,1.f},{1.f,1.f}}
 		};
-		std::vector<uint32_t> indices{ 0, 1, 2 };
+		std::vector<uint32_t> indices{ 3, 0, 1,    1, 4, 3,    4, 1, 2,
+				2, 5, 4,    6, 3, 4,    4, 7, 6,
+				7, 4, 5,    5, 8, 7 };
 		m_Mesh.Initialize(m_pDevice, vertices, indices);
 		m_Camera.Initialize(m_Width, m_Height, 45.f, { 0.f,0.f,-10.f });
 	}
@@ -56,6 +71,8 @@ namespace dae {
 		}
 
 		m_pDevice->Release();
+
+		delete m_pTexture;
 
 	}
 
@@ -79,6 +96,7 @@ namespace dae {
 		//2. Set Pipeline and Invoke Draw Calls
 
 		Matrix worldViewProjectionMatrix{ m_Camera.GetViewMatrix() * m_Camera.GetProjectionMatrix() };
+		m_Mesh.SetDiffuseMap(m_pTexture);
 		m_Mesh.SetMatrix(worldViewProjectionMatrix);
 		m_Mesh.Render(m_pDeviceContext);
 		

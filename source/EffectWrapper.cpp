@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "EffectWrapper.h"
+#include "Texture.h"
 
 EffectWrapper::EffectWrapper(ID3D11Device* pDevice, const std::wstring& assetFile)
 {
@@ -16,10 +17,18 @@ EffectWrapper::EffectWrapper(ID3D11Device* pDevice, const std::wstring& assetFil
 	{
 		std::wcout << L"MatWorldViewProjVariable not valid\n";
 	}
+
+	m_pDiffuseMapVariable = m_pEffect->GetVariableByName("gDiffuseMap")->AsShaderResource();
+	if (!m_pDiffuseMapVariable->IsValid())
+	{
+		std::wcout << L"Diffuse map not valid\n";
+	}
 }
 
 EffectWrapper::~EffectWrapper()
 {
+	m_pDiffuseMapVariable->Release();
+	m_pMatWorldViewProjVariable->Release();
 	m_pTechinque->Release();
 	m_pEffect->Release();
 }
@@ -94,4 +103,9 @@ ID3DX11Effect* EffectWrapper::LoadEffect(ID3D11Device* pDevice, const std::wstri
 	}
 
 	return pEffect;
+}
+
+void EffectWrapper::SetDiffuseMap(const Texture* pDiffuseTexture)
+{
+	if (m_pDiffuseMapVariable) m_pDiffuseMapVariable->SetResource(pDiffuseTexture->GetShaderResourceView());
 }

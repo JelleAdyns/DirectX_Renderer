@@ -1,4 +1,6 @@
 #pragma once
+
+class Texture;
 struct dae::Matrix;
 class EffectWrapper final
 {
@@ -16,14 +18,16 @@ public:
 	ID3DX11EffectTechnique* GetTechinque() const;
 	ID3DX11EffectMatrixVariable* GetWVPMatrix() const;
 	void SetMatrix(const dae::Matrix& worldViewProjMatrix);
+	void SetDiffuseMap(const Texture* pDiffuseTexture);
 
 private:
 	static ID3DX11Effect* LoadEffect(ID3D11Device* pDevice, const std::wstring& assetFile);
 
-
 	ID3DX11Effect* m_pEffect;
 	ID3DX11EffectTechnique* m_pTechinque;
 	ID3DX11EffectMatrixVariable* m_pMatWorldViewProjVariable;
+	ID3DX11EffectShaderResourceVariable* m_pDiffuseMapVariable;
+	//ID3D11SamplerState* m_pSamplerState;
 	
 };
 

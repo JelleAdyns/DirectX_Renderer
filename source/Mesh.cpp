@@ -6,7 +6,7 @@ void Mesh::Initialize(ID3D11Device* pDevice, std::vector<Vertex> vertices, std::
 {
 	//Create Vertex Shader
 	m_pEffect = new EffectWrapper{ pDevice,L"Resources/PosCol3D.fx" };
-	static constexpr uint32_t numElements{ 2 };
+	static constexpr uint32_t numElements{ 3 };
 	D3D11_INPUT_ELEMENT_DESC vertexDesc[numElements]{};
 
 	vertexDesc[0].SemanticName = "POSITION";
@@ -18,6 +18,11 @@ void Mesh::Initialize(ID3D11Device* pDevice, std::vector<Vertex> vertices, std::
 	vertexDesc[1].Format = DXGI_FORMAT_R32G32B32_FLOAT;
 	vertexDesc[1].AlignedByteOffset = 12;
 	vertexDesc[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+
+	vertexDesc[2].SemanticName = "TEXTCOORD";
+	vertexDesc[2].Format = DXGI_FORMAT_R32G32_FLOAT;
+	vertexDesc[2].AlignedByteOffset = 24;
+	vertexDesc[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	
 
 	//Create Input Layout
@@ -28,7 +33,7 @@ void Mesh::Initialize(ID3D11Device* pDevice, std::vector<Vertex> vertices, std::
 	if (FAILED(result)) return;
 
 
-	//Create vertex buffer
+	//Create vertex buffers
 	D3D11_BUFFER_DESC bd{};
 	bd.Usage = D3D11_USAGE_IMMUTABLE;
 	bd.ByteWidth = sizeof(Vertex) * static_cast<uint32_t>(vertices.size());
@@ -66,7 +71,6 @@ Mesh::~Mesh()
 
 void Mesh::Render(ID3D11DeviceContext* pDeviceContext) const
 {
-
 	pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	pDeviceContext->IASetInputLayout(m_pInputLayout);
@@ -90,4 +94,8 @@ void Mesh::Render(ID3D11DeviceContext* pDeviceContext) const
 void Mesh::SetMatrix(const dae::Matrix& worldViewProjMatrix) const
 {
 	m_pEffect->SetMatrix(worldViewProjMatrix);
+}
+void Mesh::SetDiffuseMap(const Texture* pTexture) const
+{
+	m_pEffect->SetDiffuseMap(pTexture);
 }
