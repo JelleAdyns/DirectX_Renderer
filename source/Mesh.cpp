@@ -60,9 +60,13 @@ void Mesh::Initialize(ID3D11Device* pDevice, std::vector<Vertex> vertices, std::
 	if (FAILED(result)) return;
 
 
+	result = m_pEffect->GetSamplerVariable()->GetSampler(0, &m_pSamplerState);
+	if (FAILED(result)) return;
+
 }
 Mesh::~Mesh()
 {
+	m_pSamplerState->Release();
 	m_pIndexBuffer->Release();
 	m_pVertexBuffer->Release();
 	m_pInputLayout->Release();
@@ -80,7 +84,7 @@ void Mesh::Render(ID3D11DeviceContext* pDeviceContext) const
 	pDeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
 
 	pDeviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
-
+	
 	D3DX11_TECHNIQUE_DESC techDesc{};
 	m_pEffect->GetTechinque()->GetDesc(&techDesc);
 	for (UINT p = 0; p < techDesc.Passes; ++p)
@@ -98,4 +102,21 @@ void Mesh::SetMatrix(const dae::Matrix& worldViewProjMatrix) const
 void Mesh::SetDiffuseMap(const Texture* pTexture) const
 {
 	m_pEffect->SetDiffuseMap(pTexture);
+}
+void Mesh::SetSampler(ID3D11Device* pDevice, D3D11_FILTER filter)
+{
+	D3D11_SAMPLER_DESC samplerDesc{};
+	m_pSamplerState->GetDesc(&samplerDesc);
+
+	samplerDesc.Filter = filter;
+
+	m_pSamplerState->Release();
+	HRESULT result = pDevice->CreateSamplerState(&samplerDesc, &m_pSamplerState);
+	if (result != S_OK)
+	{
+		std::wcout << L"Sampler not correctly created in Mesh class" << std::endl;
+		return;
+	}
+
+	m_pEffect->SetSamplerVariable(m_pSamplerState);
 }

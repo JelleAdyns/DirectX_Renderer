@@ -1,9 +1,9 @@
 
 float4x4 gWorldViewProj : WorldViewProjection;
 Texture2D gDiffuseMap : DiffuseMap;
-SamplerState samPoint
+SamplerState gSamplerState
 {
-    Filter = ANISOTROPIC;
+    Filter = MIN_MAG_MIP_POINT;
     AddressU = Wrap; //Wrap, Mirror, Clamp, Border
     AddressV = Wrap; //Wrap, Mirror, Clamp, Border
 };
@@ -43,7 +43,7 @@ VS_OUTPUT VS(VS_INPUT input)
 // Pixel Shader
 float4 PS(VS_OUTPUT input) : SV_Target
 {
-    return gDiffuseMap.Sample(samPoint, input.UV);
+    return gDiffuseMap.Sample(gSamplerState, input.UV);
 }
 
 

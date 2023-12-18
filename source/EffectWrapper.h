@@ -17,8 +17,10 @@ public:
 	ID3DX11Effect* GetEffect() const;
 	ID3DX11EffectTechnique* GetTechinque() const;
 	ID3DX11EffectMatrixVariable* GetWVPMatrix() const;
+	ID3DX11EffectSamplerVariable* GetSamplerVariable() const;
 	void SetMatrix(const dae::Matrix& worldViewProjMatrix);
 	void SetDiffuseMap(const Texture* pDiffuseTexture);
+	void SetSamplerVariable(ID3D11SamplerState* pSamplerState);
 
 private:
 	static ID3DX11Effect* LoadEffect(ID3D11Device* pDevice, const std::wstring& assetFile);
@@ -27,7 +29,7 @@ private:
 	ID3DX11EffectTechnique* m_pTechinque;
 	ID3DX11EffectMatrixVariable* m_pMatWorldViewProjVariable;
 	ID3DX11EffectShaderResourceVariable* m_pDiffuseMapVariable;
-	//ID3D11SamplerState* m_pSamplerState;
+	ID3DX11EffectSamplerVariable* m_pSamplerVariable;
 	
 };
 

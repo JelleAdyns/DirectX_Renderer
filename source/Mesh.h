@@ -23,11 +23,14 @@ public:
 	void Render(ID3D11DeviceContext* pDeviceContext) const;
 	void SetMatrix(const dae::Matrix& worldViewProjMatrix) const;
 	void SetDiffuseMap(const Texture* pTexture) const;
+	void SetSampler(ID3D11Device* pDevice, D3D11_FILTER filter);
+
 private:
 	EffectWrapper* m_pEffect;
 	ID3D11InputLayout* m_pInputLayout;
 	ID3D11Buffer* m_pVertexBuffer;
 	ID3D11Buffer* m_pIndexBuffer;
+	ID3D11SamplerState* m_pSamplerState;
 	uint32_t m_NumIndices;
 };
 

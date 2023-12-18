@@ -2,14 +2,9 @@
 #include "Texture.h"
 
 
-Texture::Texture(const std::string& path, ID3D11Device* pDevice) :
-	m_pResource{ nullptr },
-	m_pSRV{nullptr}
+HRESULT Texture::LoadFromFile(const std::string& path, ID3D11Device* pDevice)
 {
-	//TODO
-	//Load SDL_Surface using IMG_LOAD
-	//Create & Return a new Texture Object (using SDL_Surface)
-	//SDL_Surface* surface = );
+
 	SDL_Surface* pSurface{ IMG_Load(path.c_str()) };
 
 	DXGI_FORMAT format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -36,6 +31,7 @@ Texture::Texture(const std::string& path, ID3D11Device* pDevice) :
 	if (hr != S_OK)
 	{
 		std::wcout << L"Texture Resource not loaded correctly.\n";
+		return hr;
 	}
 		
 
@@ -49,8 +45,10 @@ Texture::Texture(const std::string& path, ID3D11Device* pDevice) :
 	if (hr != S_OK)
 	{
 		std::wcout << L"Texture ResourceView not loaded correctly.\n";
+		return hr;
 	}
 
+	return hr;
 }
 
 Texture::~Texture()

@@ -5,7 +5,8 @@
 namespace dae {
 
 	Renderer::Renderer(SDL_Window* pWindow) :
-		m_pWindow(pWindow)
+		m_pWindow(pWindow),
+		m_pTexture{ new Texture{} }
 	{
 		
 		//Initialize
@@ -22,7 +23,7 @@ namespace dae {
 		{
 			std::wcout << L"DirectX initialization failed!\n";
 		}
-		m_pTexture = new Texture{ "Resources/uv_grid_2.png",m_pDevice };
+		m_pTexture->LoadFromFile("Resources/uv_grid_2.png", m_pDevice);
 		/*std::vector<Vertex> vertices
 		{
 			{{0.f,0.5f,0.5f},{1.f,0.f,0.f}},
