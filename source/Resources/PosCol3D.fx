@@ -27,14 +27,9 @@ struct VS_OUTPUT
 VS_OUTPUT VS(VS_INPUT input)
 {
     VS_OUTPUT output = (VS_OUTPUT)0;
-    //output.Position = float4(input.Position, 1.f);
     output.Position = mul(float4(input.Position, 1.f), gWorldViewProj);
     output.Color = input.Color;
     output.UV = input.UV;
-    //output.Position[0] = mul(gWorldViewProj[0][0], output.Position[0]) + mul(gWorldViewProj[1][0], output.Position[0]) + mul(gWorldViewProj[2][0], output.Position[0]) + gWorldViewProj[3][0];
-    //output.Position[1] = mul(gWorldViewProj[0][1], output.Position[0]) + mul(gWorldViewProj[1][1], output.Position[0]) + mul(gWorldViewProj[2][1], output.Position[0]) + gWorldViewProj[3][1];
-    //output.Position[2] = mul(gWorldViewProj[0][2], output.Position[0]) + mul(gWorldViewProj[1][2], output.Position[0]) + mul(gWorldViewProj[2][2], output.Position[0]) + gWorldViewProj[3][2];
-   // output.Position = mul(gWorldViewProj[0], output.Position[0]) + mul(gWorldViewProj[1], output.Position[1]) + mul(gWorldViewProj[2], output.Position[2]) + gWorldViewProj[3];
   
     return output;
 }

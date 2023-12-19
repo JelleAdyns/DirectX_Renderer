@@ -75,6 +75,7 @@ Mesh::~Mesh()
 
 void Mesh::Render(ID3D11DeviceContext* pDeviceContext) const
 {
+	
 	pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	pDeviceContext->IASetInputLayout(m_pInputLayout);

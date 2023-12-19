@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Renderer.h"
 #include "Texture.h"
+#include "Utils.h"
 
 namespace dae {
 
@@ -23,7 +24,7 @@ namespace dae {
 		{
 			std::wcout << L"DirectX initialization failed!\n";
 		}
-		m_pTexture->LoadFromFile("Resources/uv_grid_2.png", m_pDevice);
+		m_pTexture->LoadFromFile("Resources/vehicle_diffuse.png", m_pDevice);
 		/*std::vector<Vertex> vertices
 		{
 			{{0.f,0.5f,0.5f},{1.f,0.f,0.f}},
@@ -37,7 +38,7 @@ namespace dae {
 			{{3, -3, 2},{0.f, 0.f, 1.f}},
 			{{-3, -3, 2},{0.f,1.f,0.f}}
 		};*/
-		std::vector<Vertex> vertices
+		/*std::vector<Vertex> vertices
 		{
 			Vertex{{-3,  3, -2},{1.f,1.f,1.f},{0.f,0.f}},
 				Vertex{{ 0,  3, -2},{1.f,1.f,1.f},{ 0.5f, 0.f}},
@@ -51,9 +52,13 @@ namespace dae {
 		};
 		std::vector<uint32_t> indices{ 3, 0, 1,    1, 4, 3,    4, 1, 2,
 				2, 5, 4,    6, 3, 4,    4, 7, 6,
-				7, 4, 5,    5, 8, 7 };
+				7, 4, 5,    5, 8, 7 };*/
+		std::vector<Vertex> vertices{};
+		std::vector<uint32_t> indices{};
+		Utils::ParseOBJ("Resources/vehicle.obj", vertices, indices, false);
 		m_Mesh.Initialize(m_pDevice, vertices, indices);
-		m_Camera.Initialize(m_Width, m_Height, 45.f, { 0.f,0.f,-10.f });
+		m_Camera.Initialize(m_Width, m_Height, 45.f, { 0.f,0.f,-50.f });
+		//m_pDeviceContext->GenerateMips(m_pTexture->GetShaderResourceView());
 	}
 
 	Renderer::~Renderer()
@@ -96,7 +101,7 @@ namespace dae {
 
 		//2. Set Pipeline and Invoke Draw Calls
 
-		Matrix worldViewProjectionMatrix{ m_Camera.GetViewMatrix() * m_Camera.GetProjectionMatrix() };
+		Matrix worldViewProjectionMatrix{ Matrix::CreateRotationY(90 * TO_RADIANS) * m_Camera.GetViewMatrix() * m_Camera.GetProjectionMatrix() };
 		m_Mesh.SetDiffuseMap(m_pTexture);
 		m_Mesh.SetMatrix(worldViewProjectionMatrix);
 		m_Mesh.Render(m_pDeviceContext);
