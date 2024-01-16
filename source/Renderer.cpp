@@ -6,8 +6,7 @@
 namespace dae {
 
 	Renderer::Renderer(SDL_Window* pWindow) :
-		m_pWindow(pWindow),
-		m_pTexture{ new Texture{} }
+		m_pWindow(pWindow)
 	{
 		
 		//Initialize
@@ -24,7 +23,6 @@ namespace dae {
 		{
 			std::wcout << L"DirectX initialization failed!\n";
 		}
-		m_pTexture->LoadFromFile("Resources/vehicle_diffuse.png", m_pDevice);
 		/*std::vector<Vertex> vertices
 		{
 			{{0.f,0.5f,0.5f},{1.f,0.f,0.f}},
@@ -53,10 +51,44 @@ namespace dae {
 		std::vector<uint32_t> indices{ 3, 0, 1,    1, 4, 3,    4, 1, 2,
 				2, 5, 4,    6, 3, 4,    4, 7, 6,
 				7, 4, 5,    5, 8, 7 };*/
+
+
+		//VEHICLE
+		
+		Mesh* vehicle{ new Mesh{ Matrix::CreateRotationY(90 * TO_RADIANS)} };
+		
 		std::vector<Vertex> vertices{};
 		std::vector<uint32_t> indices{};
-		Utils::ParseOBJ("Resources/vehicle.obj", vertices, indices, false);
-		m_Mesh.Initialize(m_pDevice, vertices, indices);
+		Utils::ParseOBJ("Resources/vehicle.obj", vertices, indices);
+		vehicle->Initialize(m_pDevice, L"Resources/OpaqueShader.fx", vertices, indices);
+
+		Texture* pDiffuse{ new Texture{} };
+		Texture* pNormals{ new Texture{} };
+		Texture* pSpecular{ new Texture{} };
+		Texture* pGlossiness{ new Texture{} };
+		pDiffuse->LoadFromFile("Resources/vehicle_diffuse.png", m_pDevice);
+		pNormals->LoadFromFile("Resources/vehicle_normal.png", m_pDevice);
+		pSpecular->LoadFromFile("Resources/vehicle_specular.png", m_pDevice);
+		pGlossiness->LoadFromFile("Resources/vehicle_gloss.png", m_pDevice);
+
+		vehicle->SetTextures(pDiffuse, pNormals, pSpecular, pGlossiness);
+
+		m_pVecMeshes.push_back(vehicle);
+
+		//FIRE
+		Mesh* fire{ new Mesh{ Matrix::CreateRotationY(90 * TO_RADIANS)} };
+		
+		vertices.clear();
+		indices.clear();
+		Utils::ParseOBJ("Resources/fireFX.obj", vertices, indices);
+		fire->Initialize(m_pDevice, L"Resources/TransparancyShader.fx", vertices, indices, true);
+
+		Texture* pDiffuseFlame{ new Texture{} };
+		pDiffuseFlame->LoadFromFile("Resources/fireFX_diffuse.png", m_pDevice);
+		fire->SetTextures(pDiffuseFlame);
+		
+		m_pVecMeshes.push_back(fire);
+
 		m_Camera.Initialize(m_Width, m_Height, 45.f, { 0.f,0.f,-50.f });
 		//m_pDeviceContext->GenerateMips(m_pTexture->GetShaderResourceView());
 	}
@@ -78,7 +110,10 @@ namespace dae {
 
 		m_pDevice->Release();
 
-		delete m_pTexture;
+		for (auto& mesh: m_pVecMeshes)
+		{
+			delete mesh;
+		}
 
 	}
 
@@ -101,10 +136,14 @@ namespace dae {
 
 		//2. Set Pipeline and Invoke Draw Calls
 
-		Matrix worldViewProjectionMatrix{ Matrix::CreateRotationY(90 * TO_RADIANS) * m_Camera.GetViewMatrix() * m_Camera.GetProjectionMatrix() };
-		m_Mesh.SetDiffuseMap(m_pTexture);
-		m_Mesh.SetMatrix(worldViewProjectionMatrix);
-		m_Mesh.Render(m_pDeviceContext);
+		Matrix worldViewProjectionMatrix{ m_pVecMeshes[0]->GetWorldMatrix() * m_Camera.GetViewMatrix() * m_Camera.GetProjectionMatrix()};
+		for (const auto& mesh : m_pVecMeshes)
+		{
+			mesh->SetCameraPosition(m_Camera.GetCameraOrigin());
+			mesh->SetEffectMatrices(worldViewProjectionMatrix, mesh->GetWorldMatrix());
+			mesh->Render(m_pDeviceContext);
+		}
+		
 		
 		
 		//3. Present Backbuffer

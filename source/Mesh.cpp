@@ -1,12 +1,21 @@
 #include "pch.h"
 #include "Mesh.h"
+#include "Vertex.h"
+#include "Texture.h"
 
+Mesh::Mesh(const dae::Matrix& worldMatrix) :
+	m_WorldMatrix{ worldMatrix }
+{
 
-void Mesh::Initialize(ID3D11Device* pDevice, std::vector<Vertex> vertices, std::vector<uint32_t> indices)
+}
+
+void Mesh::Initialize(ID3D11Device* pDevice, const std::wstring& assetFile, std::vector<Vertex> vertices, std::vector<uint32_t> indices, bool needsTransparancy)
 {
 	//Create Vertex Shader
-	m_pEffect = new EffectWrapper{ pDevice,L"Resources/PosCol3D.fx" };
-	static constexpr uint32_t numElements{ 3 };
+	if (needsTransparancy) m_pEffect = new EffectWrapperTransparancy{ pDevice, assetFile };
+	else m_pEffect = new EffectWrapperOpaque{ pDevice,assetFile };
+
+	static constexpr uint32_t numElements{ 4 };
 	D3D11_INPUT_ELEMENT_DESC vertexDesc[numElements]{};
 
 	vertexDesc[0].SemanticName = "POSITION";
@@ -14,15 +23,20 @@ void Mesh::Initialize(ID3D11Device* pDevice, std::vector<Vertex> vertices, std::
 	vertexDesc[0].AlignedByteOffset = 0;
 	vertexDesc[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 
-	vertexDesc[1].SemanticName = "COLOR";
-	vertexDesc[1].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	vertexDesc[1].SemanticName = "TEXTCOORD";
+	vertexDesc[1].Format = DXGI_FORMAT_R32G32_FLOAT;
 	vertexDesc[1].AlignedByteOffset = 12;
 	vertexDesc[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 
-	vertexDesc[2].SemanticName = "TEXTCOORD";
-	vertexDesc[2].Format = DXGI_FORMAT_R32G32_FLOAT;
-	vertexDesc[2].AlignedByteOffset = 24;
+	vertexDesc[2].SemanticName = "NORMAL";
+	vertexDesc[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	vertexDesc[2].AlignedByteOffset = 20;
 	vertexDesc[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+
+	vertexDesc[3].SemanticName = "TANGENT";
+	vertexDesc[3].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	vertexDesc[3].AlignedByteOffset = 32;
+	vertexDesc[3].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	
 
 	//Create Input Layout
@@ -66,11 +80,15 @@ void Mesh::Initialize(ID3D11Device* pDevice, std::vector<Vertex> vertices, std::
 }
 Mesh::~Mesh()
 {
+	delete m_pEffect;
 	m_pSamplerState->Release();
 	m_pIndexBuffer->Release();
 	m_pVertexBuffer->Release();
 	m_pInputLayout->Release();
-	delete m_pEffect;
+	if(m_pGlossTexture != nullptr) delete m_pGlossTexture;
+	if(m_pSpecularTexture != nullptr) delete m_pSpecularTexture;
+	if(m_pNormalTexture != nullptr) delete m_pNormalTexture;
+	if(m_pDiffuseTexture != nullptr) delete m_pDiffuseTexture;
 }
 
 void Mesh::Render(ID3D11DeviceContext* pDeviceContext) const
@@ -96,14 +114,19 @@ void Mesh::Render(ID3D11DeviceContext* pDeviceContext) const
 
 }
 
-void Mesh::SetMatrix(const dae::Matrix& worldViewProjMatrix) const
+
+
+
+//SETTERS
+void Mesh::SetEffectMatrices(const dae::Matrix& worldViewProjMatrix, const dae::Matrix& worldMatrix) const
 {
-	m_pEffect->SetMatrix(worldViewProjMatrix);
+	m_pEffect->SetMatrices(worldViewProjMatrix, worldMatrix);
 }
-void Mesh::SetDiffuseMap(const Texture* pTexture) const
+void Mesh::SetCameraPosition(const dae::Vector3& newCameraPosition) const
 {
-	m_pEffect->SetDiffuseMap(pTexture);
+	m_pEffect->SetCameraPosition(newCameraPosition);
 }
+
 void Mesh::SetSampler(ID3D11Device* pDevice, D3D11_FILTER filter)
 {
 	D3D11_SAMPLER_DESC samplerDesc{};
@@ -120,4 +143,13 @@ void Mesh::SetSampler(ID3D11Device* pDevice, D3D11_FILTER filter)
 	}
 
 	m_pEffect->SetSamplerVariable(m_pSamplerState);
+}
+void Mesh::SetTextures(Texture* pDiffuse, Texture* pNormalMap, Texture* pSpecular, Texture* pGlossiness)
+{
+	m_pDiffuseTexture = pDiffuse;
+	m_pNormalTexture = pNormalMap;
+	m_pSpecularTexture = pSpecular;
+	m_pGlossTexture = pGlossiness;
+	m_pEffect->SetTextures(pDiffuse, pNormalMap, pSpecular, pGlossiness);
+	
 }

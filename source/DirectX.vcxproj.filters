@@ -51,6 +51,15 @@
     <ClInclude Include="Utils.h">
       <Filter>Misc</Filter>
     </ClInclude>
+    <ClInclude Include="Vertex.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="EffectWrapperOpaque.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="EffectWrapperTransparancy.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -81,6 +90,12 @@
       <Filter>Misc</Filter>
     </ClCompile>
     <ClCompile Include="Texture.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectWrapperOpaque.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectWrapperTransparancy.cpp">
       <Filter>Misc</Filter>
     </ClCompile>
   </ItemGroup>

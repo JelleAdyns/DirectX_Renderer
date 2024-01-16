@@ -42,23 +42,30 @@ namespace dae
 
 		void SetSamplerState()
 		{
-
 			switch (m_FilterMode)
 			{
 			case Filtermode::Point:
+				for (const auto& mesh : m_pVecMeshes)
+				{
+					mesh->SetSampler(m_pDevice, D3D11_FILTER_MIN_MAG_MIP_POINT);
+				}
 				std::cout << "FILTERMODE: Point" << std::endl;
-				m_Mesh.SetSampler(m_pDevice, D3D11_FILTER_MIN_MAG_MIP_POINT);
 				break;
 			case Filtermode::Linear:
+				for (const auto& mesh : m_pVecMeshes)
+				{
+					mesh->SetSampler(m_pDevice, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
+				}
 				std::cout << "FILTERMODE: Linear" << std::endl;
-				m_Mesh.SetSampler(m_pDevice, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
 				break;
 			case Filtermode::Anisotropic:
+				for (const auto& mesh : m_pVecMeshes)
+				{
+					mesh->SetSampler(m_pDevice, D3D11_FILTER_ANISOTROPIC);
+				}
 				std::cout << "FILTERMODE: Anisotropic" << std::endl;
-				m_Mesh.SetSampler(m_pDevice, D3D11_FILTER_ANISOTROPIC);
 				break;
 			}
-		
 		}
 
 	private:
@@ -75,14 +82,13 @@ namespace dae
 		
 
 		Camera m_Camera{};
-		Mesh m_Mesh{};
-
+		std::vector<Mesh*> m_pVecMeshes{};
 		int m_Width{};
 		int m_Height{};
 
 		bool m_IsInitialized{ false };
 
-		Texture* m_pTexture{ nullptr };
+
 		//DIRECTX
 		HRESULT InitializeDirectX();
 

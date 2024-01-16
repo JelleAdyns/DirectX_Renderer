@@ -1,45 +1,40 @@
 #include "pch.h"
 #include "EffectWrapper.h"
-#include "Texture.h"
+
 
 EffectWrapper::EffectWrapper(ID3D11Device* pDevice, const std::wstring& assetFile)
 {
 	m_pEffect = LoadEffect(pDevice, assetFile);
 
-	m_pTechinque = m_pEffect->GetTechniqueByName("DefaultTechnique");
-	if (!m_pTechinque->IsValid())
-	{
-		std::wcout << L"Technique not valid\n";
-	}
 
-	m_pMatWorldViewProjVariable = m_pEffect->GetVariableByName("gWorldViewProj")->AsMatrix();
-	if (!m_pMatWorldViewProjVariable->IsValid())
-	{
-		std::wcout << L"MatWorldViewProjVariable not valid\n";
-	}
 
-	m_pDiffuseMapVariable = m_pEffect->GetVariableByName("gDiffuseMap")->AsShaderResource();
-	if (!m_pDiffuseMapVariable->IsValid())
-	{
-		std::wcout << L"Diffuse map not valid\n";
-	}
+	m_pWorldViewProjVariable = m_pEffect->GetVariableByName("gWorldViewProj")->AsMatrix();
+	if (!m_pWorldViewProjVariable->IsValid()) std::wcout << L"MatWorldViewProjVariable not valid\n";
+
+	m_pWorldVariable = m_pEffect->GetVariableByName("gWorldMatrix")->AsMatrix();
+	if (!m_pWorldVariable->IsValid()) std::wcout << L"MatWorldVariable not valid\n";
+
 
 	m_pSamplerVariable = m_pEffect->GetVariableByName("gSamplerState")->AsSampler();
-	if (!m_pSamplerVariable->IsValid())
-	{
-		std::wcout << L"Sampler variable not valid\n";
-	}
+	if (!m_pSamplerVariable->IsValid()) std::wcout << L"Sampler variable not valid\n";
+
+
 }
 
 EffectWrapper::~EffectWrapper()
 {
+
 	m_pSamplerVariable->Release();
-	m_pDiffuseMapVariable->Release();
-	m_pMatWorldViewProjVariable->Release();
+	m_pWorldVariable->Release();
+	m_pWorldViewProjVariable->Release();
 	m_pTechinque->Release();
 	m_pEffect->Release();
 }
 
+
+
+
+//GETTERS
 ID3DX11Effect* EffectWrapper::GetEffect() const
 {
 	return m_pEffect;
@@ -50,13 +45,17 @@ ID3DX11EffectTechnique* EffectWrapper::GetTechinque() const
 }
 ID3DX11EffectMatrixVariable* EffectWrapper::GetWVPMatrix() const
 {
-	return m_pMatWorldViewProjVariable;
+	return m_pWorldViewProjVariable;
 }
 ID3DX11EffectSamplerVariable* EffectWrapper::GetSamplerVariable() const
 {
 	return m_pSamplerVariable;
 }
-void EffectWrapper::SetMatrix(const dae::Matrix& worldViewProjMatrix)
+
+
+
+//SETTERS
+void EffectWrapper::SetMatrices(const dae::Matrix& worldViewProjMatrix, const dae::Matrix& worldMatrix)
 {
 	constexpr int numOfRows{ 4 };
 	constexpr int numOfCols{ 4 };
@@ -68,19 +67,33 @@ void EffectWrapper::SetMatrix(const dae::Matrix& worldViewProjMatrix)
 			arrayMatrix[col + row * numOfCols] = worldViewProjMatrix[row][col];
 		}
 	}
-	m_pMatWorldViewProjVariable->SetMatrix(arrayMatrix);
+	m_pWorldViewProjVariable->SetMatrix(arrayMatrix);
+
+	for (int row = 0; row < numOfRows; ++row)
+	{
+		for (int col = 0; col < numOfRows; ++col)
+		{
+			arrayMatrix[col + row * numOfCols] = worldMatrix[row][col];
+		}
+	}
+	m_pWorldVariable->SetMatrix(arrayMatrix);
+
+
 }
 
-void EffectWrapper::SetDiffuseMap(const Texture* pDiffuseTexture)
-{
-	if (m_pDiffuseMapVariable) m_pDiffuseMapVariable->SetResource(pDiffuseTexture->GetShaderResourceView());
-}
-
+//void EffectWrapper::SetDiffuseTexture(const Texture* pDiffuse)
+//{
+//	if (m_pDiffuseMapVariable) m_pDiffuseMapVariable->SetResource(pDiffuse->GetShaderResourceView());
+//}
 void EffectWrapper::SetSamplerVariable(ID3D11SamplerState* pSamplerState)
 {
 	m_pSamplerVariable->SetSampler(0, pSamplerState);
 }
 
+
+
+
+//LOADEFFECT
 ID3DX11Effect* EffectWrapper::LoadEffect(ID3D11Device* pDevice, const std::wstring& assetFile)
 {
 	HRESULT result;

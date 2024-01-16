@@ -1,8 +1,10 @@
 #pragma once
 
-class Texture;
+#include "Texture.h"
+
 struct dae::Matrix;
-class EffectWrapper final
+struct dae::Vector3;
+class EffectWrapper
 {
 public:
 	explicit EffectWrapper(ID3D11Device* pDevice, const std::wstring& assetFile);
@@ -18,18 +20,29 @@ public:
 	ID3DX11EffectTechnique* GetTechinque() const;
 	ID3DX11EffectMatrixVariable* GetWVPMatrix() const;
 	ID3DX11EffectSamplerVariable* GetSamplerVariable() const;
-	void SetMatrix(const dae::Matrix& worldViewProjMatrix);
-	void SetDiffuseMap(const Texture* pDiffuseTexture);
+
+	void SetMatrices(const dae::Matrix& worldViewProjMatrix, const dae::Matrix& worldMatrix);
 	void SetSamplerVariable(ID3D11SamplerState* pSamplerState);
 
-private:
-	static ID3DX11Effect* LoadEffect(ID3D11Device* pDevice, const std::wstring& assetFile);
+	//void SetDiffuseTexture(const Texture* pDiffuse);
+	virtual void SetCameraPosition(const dae::Vector3& newCameraPosition) = 0;
+	virtual void SetTextures(const Texture* pDiffuse, const Texture* pNormalMap = nullptr, const Texture* pSpecular = nullptr, const Texture* pGlossiness = nullptr) = 0;
+
+
+protected:
 
 	ID3DX11Effect* m_pEffect;
 	ID3DX11EffectTechnique* m_pTechinque;
-	ID3DX11EffectMatrixVariable* m_pMatWorldViewProjVariable;
-	ID3DX11EffectShaderResourceVariable* m_pDiffuseMapVariable;
+	ID3DX11EffectMatrixVariable* m_pWorldViewProjVariable;
+	ID3DX11EffectMatrixVariable* m_pWorldVariable;
+	
 	ID3DX11EffectSamplerVariable* m_pSamplerVariable;
+
+
+private:
+
+	static ID3DX11Effect* LoadEffect(ID3D11Device* pDevice, const std::wstring& assetFile);
+	
 	
 };
 

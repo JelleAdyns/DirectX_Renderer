@@ -27,8 +27,9 @@ namespace dae
 		void TransformForwardVector();
 
 
-		Matrix GetViewMatrix() const { return m_ViewMatrix; }
-		Matrix GetProjectionMatrix() const { return m_ProjectionMatrix; }
+		const Matrix& GetViewMatrix() const { return m_ViewMatrix; }
+		const Matrix& GetProjectionMatrix() const { return m_ProjectionMatrix; }
+		const Vector3& GetCameraOrigin() const { return m_Origin; }
 	private:
 		const float m_Near{ 1.f };
 		const float m_Far{ 100.f };
@@ -44,7 +45,7 @@ namespace dae
 		float m_TotalPitch{};
 		float m_TotalYaw{};
 
-		const float m_TranslateSpeed{ 10.f };
+		const float m_TranslateSpeed{ 30.f };
 
 		Matrix m_InvViewMatrix{};
 		Matrix m_ViewMatrix{};

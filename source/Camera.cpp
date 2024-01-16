@@ -73,7 +73,7 @@ namespace dae
 
 		if (mouseState == SDL_BUTTON(SDL_BUTTON_LEFT))
 		{
-			if (mouseY != 0) m_Origin += m_Forward * float(-mouseY) * m_TranslateSpeed * deltaTime;
+			if (mouseY != 0) m_Origin += m_Forward * float(-mouseY) * m_TranslateSpeed * deltaTime * 10.f;
 
 			if (mouseX != 0)
 			{
@@ -83,7 +83,7 @@ namespace dae
 		}
 		if (mouseState == (SDL_BUTTON(SDL_BUTTON_LEFT) | SDL_BUTTON(SDL_BUTTON_RIGHT)))
 		{
-			if (mouseY != 0) m_Origin.y += mouseY * m_TranslateSpeed * deltaTime;
+			if (mouseY != 0) m_Origin.y += float(mouseY) * m_TranslateSpeed * deltaTime * 10.f;
 		}
 
 	}
