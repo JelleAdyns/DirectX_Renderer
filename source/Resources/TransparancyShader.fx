@@ -3,12 +3,12 @@
 float4x4 gWorldViewProj : WorldViewProjection;
 float4x4 gWorldMatrix : WORLD;
 Texture2D gDiffuseMapTransparancy : DiffuseMap;
-SamplerState gSamplerState
-{
-    Filter = MIN_MAG_MIP_POINT;
-    AddressU = Wrap; //Wrap, Mirror, Clamp, Border
-    AddressV = Wrap; //Wrap, Mirror, Clamp, Border
-};
+SamplerState gSamplerState;
+//{
+//    Filter = MIN_MAG_MIP_POINT;
+//    AddressU = Wrap; //Wrap, Mirror, Clamp, Border
+//    AddressV = Wrap; //Wrap, Mirror, Clamp, Border
+//};
 
 RasterizerState gRasterizerState
 {
@@ -26,6 +26,30 @@ BlendState gBlendState
     DestBlendAlpha = zero;
     BlendOpAlpha = add;
     RenderTargetWriteMask[0] = 0x0F;
+};
+
+DepthStencilState gDepthStencilState
+{
+    DepthEnable = true;
+    DepthWriteMask = zero;
+    DepthFunc = less;
+    StencilEnable = false;
+    
+    StencilReadMask = 0x0F;
+    StencilWriteMask = 0x0F;
+    
+    FrontFaceStencilFunc = always;
+    BackFaceStencilFunc = always;
+
+    FrontFaceStencilDepthFail = keep;
+    BackFaceStencilDepthFail = keep;
+
+    FrontFaceStencilPass = keep;
+    BackFaceStencilPass = keep;
+
+    FrontFaceStencilFail = keep;
+    BackFaceStencilFail = keep;
+
 };
 
 // Input/Output Structs
@@ -68,11 +92,12 @@ float4 PS(VS_OUTPUT input) : SV_Target
 
 
 //Technique
-technique11 TransparentTechnique
+technique11 DefaultTechnique
 {
     pass P0
     {
         SetRasterizerState(gRasterizerState);
+        SetDepthStencilState(gDepthStencilState,0);
         SetBlendState(gBlendState, float4(0.f, 0.f, 0.f, 0.f), 0xFFFFFFFF);
         SetVertexShader(CompileShader(vs_5_0, VS()));
         SetGeometryShader(NULL);

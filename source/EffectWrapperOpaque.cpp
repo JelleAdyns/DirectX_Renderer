@@ -5,10 +5,6 @@
 EffectWrapperOpaque::EffectWrapperOpaque(ID3D11Device* pDevice, const std::wstring& assetFile) :
 	EffectWrapper{ pDevice, assetFile }
 {
-
-	m_pTechinque = m_pEffect->GetTechniqueByName("OpaqueTechnique");
-	if (!m_pTechinque->IsValid()) std::wcout << L"Opaque Technique not valid\n";
-
 	m_pCameraPosition = m_pEffect->GetVariableByName("gCameraPosition")->AsVector();
 	if (!m_pCameraPosition->IsValid()) std::wcout << L"MatWorldVariable not valid\n";
 

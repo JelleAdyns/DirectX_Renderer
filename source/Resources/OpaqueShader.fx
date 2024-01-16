@@ -11,6 +11,8 @@ Texture2D gDiffuseMapOpaque : DiffuseMap;
 Texture2D gNormalMap : NormalMap;
 Texture2D gSpecularMap : SpecularMap;
 Texture2D gGlossinessMap : GlossinessMap;
+
+
 SamplerState gSamplerState
 {
     Filter = MIN_MAG_MIP_POINT;
@@ -18,18 +20,15 @@ SamplerState gSamplerState
     AddressV = Wrap; //Wrap, Mirror, Clamp, Border
 };
 
-BlendState gBlendState
+
+RasterizerState gRasterizerState
 {
-    BlendEnable[0] = false;
-    SrcBlend = src_alpha;
-    DestBlend = inv_src_alpha;
-    BlendOp = add;
-    SrcBlendAlpha = zero;
-    DestBlendAlpha = zero;
-    BlendOpAlpha = add;
-    RenderTargetWriteMask[0] = 0x0F;
+    CullMode = back;
+    FrontCounterClockwise = false;
 };
 
+BlendState gBlendState;
+DepthStencilState gDepthStencilState;
 
 // Input/Output Structs
 struct VS_INPUT
@@ -93,10 +92,12 @@ float4 PS(VS_OUTPUT input) : SV_Target
 
 
 //Technique
-technique11 OpaqueTechnique
+technique11 DefaultTechnique
 {
     pass P0
     {
+        SetRasterizerState(gRasterizerState);
+        SetDepthStencilState(gDepthStencilState, 0);
         SetBlendState(gBlendState, float4(0.f, 0.f, 0.f, 0.f), 0xFFFFFFFF);
         SetVertexShader(CompileShader(vs_5_0, VS()));
         SetGeometryShader(NULL);

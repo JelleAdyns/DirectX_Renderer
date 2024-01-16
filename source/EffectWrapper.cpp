@@ -6,6 +6,8 @@ EffectWrapper::EffectWrapper(ID3D11Device* pDevice, const std::wstring& assetFil
 {
 	m_pEffect = LoadEffect(pDevice, assetFile);
 
+	m_pTechinque = m_pEffect->GetTechniqueByName("DefaultTechnique");
+	if (!m_pTechinque->IsValid()) std::wcout << L"Technique not valid\n";
 
 
 	m_pWorldViewProjVariable = m_pEffect->GetVariableByName("gWorldViewProj")->AsMatrix();
