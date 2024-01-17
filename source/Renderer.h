@@ -21,6 +21,22 @@ namespace dae
 		void Update(const Timer* pTimer);
 		void Render() const;
 
+		void ToggleRotation() 
+		{ 
+			m_Rotate = !m_Rotate;
+			std::cout << std::boolalpha << "ROTATION: " << m_Rotate << std::endl;
+		}
+		void ToggleNormals()
+		{ 
+			m_UseNormalMaps = !m_UseNormalMaps; 
+			m_pVehicle->SetUseNormalMaps(m_UseNormalMaps);
+			std::cout << std::boolalpha << "NORMAL MAPS: " << m_UseNormalMaps << std::endl;
+		}
+		void ToggleFire() 
+		{
+			m_ShowFire = !m_ShowFire; 
+			std::cout << std::boolalpha << "FIRE SHOWN: " << m_ShowFire << std::endl;
+		}
 		void SwitchFilterMethod()
 		{
 
@@ -45,24 +61,20 @@ namespace dae
 			switch (m_FilterMode)
 			{
 			case Filtermode::Point:
-				for (const auto& mesh : m_pVecMeshes)
-				{
-					mesh->SetSampler(m_pDevice, D3D11_FILTER_MIN_MAG_MIP_POINT);
-				}
+				m_pVehicle->SetSampler(m_pDevice, D3D11_FILTER_MIN_MAG_MIP_POINT);
+				m_pFire->SetSampler(m_pDevice, D3D11_FILTER_MIN_MAG_MIP_POINT);
 				std::cout << "FILTERMODE: Point" << std::endl;
 				break;
+
 			case Filtermode::Linear:
-				for (const auto& mesh : m_pVecMeshes)
-				{
-					mesh->SetSampler(m_pDevice, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
-				}
+				m_pVehicle->SetSampler(m_pDevice, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
+				m_pFire->SetSampler(m_pDevice, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
 				std::cout << "FILTERMODE: Linear" << std::endl;
 				break;
+
 			case Filtermode::Anisotropic:
-				for (const auto& mesh : m_pVecMeshes)
-				{
-					mesh->SetSampler(m_pDevice, D3D11_FILTER_ANISOTROPIC);
-				}
+				m_pVehicle->SetSampler(m_pDevice, D3D11_FILTER_ANISOTROPIC);
+				m_pFire->SetSampler(m_pDevice, D3D11_FILTER_ANISOTROPIC);
 				std::cout << "FILTERMODE: Anisotropic" << std::endl;
 				break;
 			}
@@ -82,12 +94,20 @@ namespace dae
 		
 
 		Camera m_Camera{};
-		std::vector<Mesh*> m_pVecMeshes{};
+		//std::vector<Mesh*> m_pVecMeshes{};
+		Mesh* m_pVehicle;
+		Mesh* m_pFire;
 		int m_Width{};
 		int m_Height{};
 
 		bool m_IsInitialized{ false };
 
+		float m_MeshRotation{};
+		Matrix m_MeshWorldMatrix{};
+
+		bool m_Rotate{ true };
+		bool m_UseNormalMaps{ true };
+		bool m_ShowFire{ true };
 
 		//DIRECTX
 		HRESULT InitializeDirectX();

@@ -3,6 +3,7 @@
 float4x4 gWorldViewProj : WorldViewProjection;
 float4x4 gWorldMatrix : WORLD;
 Texture2D gDiffuseMapTransparancy : DiffuseMap;
+bool gUseNormalMap : UseNormalMap;
 SamplerState gSamplerState;
 //{
 //    Filter = MIN_MAG_MIP_POINT;

@@ -6,7 +6,8 @@
 namespace dae {
 
 	Renderer::Renderer(SDL_Window* pWindow) :
-		m_pWindow(pWindow)
+		m_pWindow{pWindow},
+		m_MeshWorldMatrix{}
 	{
 		
 		//Initialize
@@ -53,9 +54,11 @@ namespace dae {
 				7, 4, 5,    5, 8, 7 };*/
 
 
+		
+
 		//VEHICLE
 		
-		Mesh* vehicle{ new Mesh{ Matrix::CreateRotationY(90 * TO_RADIANS)} };
+		Mesh* vehicle{ new Mesh{ m_MeshWorldMatrix } };
 		
 		std::vector<Vertex> vertices{};
 		std::vector<uint32_t> indices{};
@@ -73,10 +76,10 @@ namespace dae {
 
 		vehicle->SetTextures(pDiffuse, pNormals, pSpecular, pGlossiness);
 
-		m_pVecMeshes.push_back(vehicle);
+		m_pVehicle = vehicle;
 
 		//FIRE
-		Mesh* fire{ new Mesh{ Matrix::CreateRotationY(90 * TO_RADIANS)} };
+		Mesh* fire{ new Mesh{ m_MeshWorldMatrix} };
 		
 		vertices.clear();
 		indices.clear();
@@ -87,7 +90,7 @@ namespace dae {
 		pDiffuseFlame->LoadFromFile("Resources/fireFX_diffuse.png", m_pDevice);
 		fire->SetTextures(pDiffuseFlame);
 		
-		m_pVecMeshes.push_back(fire);
+		m_pFire = fire;
 
 		m_Camera.Initialize(m_Width, m_Height, 45.f, { 0.f,0.f,-50.f });
 		//m_pDeviceContext->GenerateMips(m_pTexture->GetShaderResourceView());
@@ -110,16 +113,22 @@ namespace dae {
 
 		m_pDevice->Release();
 
-		for (auto& mesh: m_pVecMeshes)
-		{
-			delete mesh;
-		}
+		delete m_pVehicle;
+		delete m_pFire;
 
 	}
 
 	void Renderer::Update(const Timer* pTimer)
 	{
 		m_Camera.Update(pTimer);
+		if (m_Rotate)
+		{
+			m_MeshRotation += 45 * pTimer->GetElapsed() * TO_RADIANS;
+			m_MeshWorldMatrix = Matrix::CreateRotationY(m_MeshRotation);
+			m_pVehicle->SetWorldMatrix(m_MeshWorldMatrix);
+			m_pFire->SetWorldMatrix(m_MeshWorldMatrix);
+		}
+	
 	}
 
 
@@ -130,20 +139,23 @@ namespace dae {
 
 		//1. Clear RTV & DSV
 
-		static constexpr float color[4] = { 0.f,0.f,0.3f,1.f };
+		static constexpr float color[4] = { 0.39f,0.59f,0.93f,1.f };
 		m_pDeviceContext->ClearRenderTargetView(m_pRenderTargetView, color);
 		m_pDeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.f, 0);
 
 		//2. Set Pipeline and Invoke Draw Calls
+		Matrix worldViewProjectionMatrix{ m_MeshWorldMatrix * m_Camera.GetViewMatrix() * m_Camera.GetProjectionMatrix()};
 
-		Matrix worldViewProjectionMatrix{ m_pVecMeshes[0]->GetWorldMatrix() * m_Camera.GetViewMatrix() * m_Camera.GetProjectionMatrix()};
-		for (const auto& mesh : m_pVecMeshes)
+		m_pVehicle->SetCameraPosition(m_Camera.GetCameraOrigin());
+		m_pVehicle->SetEffectMatrices(worldViewProjectionMatrix, m_pVehicle->GetWorldMatrix());
+		m_pVehicle->Render(m_pDeviceContext);
+
+		if (m_ShowFire)
 		{
-			mesh->SetCameraPosition(m_Camera.GetCameraOrigin());
-			mesh->SetEffectMatrices(worldViewProjectionMatrix, mesh->GetWorldMatrix());
-			mesh->Render(m_pDeviceContext);
+			m_pFire->SetCameraPosition(m_Camera.GetCameraOrigin());
+			m_pFire->SetEffectMatrices(worldViewProjectionMatrix, m_pFire->GetWorldMatrix());
+			m_pFire->Render(m_pDeviceContext);
 		}
-		
 		
 		
 		//3. Present Backbuffer

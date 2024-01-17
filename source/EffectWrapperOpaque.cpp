@@ -19,9 +19,13 @@ EffectWrapperOpaque::EffectWrapperOpaque(ID3D11Device* pDevice, const std::wstri
 
 	m_pGlossMapVariable = m_pEffect->GetVariableByName("gGlossinessMap")->AsShaderResource();
 	if (!m_pGlossMapVariable->IsValid()) std::wcout << L"Glossiness map not valid\n";
+
+
+
 }
 EffectWrapperOpaque::~EffectWrapperOpaque()
 {
+	
 	m_pGlossMapVariable->Release();
 	m_pSpecularMapVariable->Release();
 	m_pNormalMapVariable->Release();

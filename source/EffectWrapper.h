@@ -27,7 +27,7 @@ public:
 	//void SetDiffuseTexture(const Texture* pDiffuse);
 	virtual void SetCameraPosition(const dae::Vector3& newCameraPosition) = 0;
 	virtual void SetTextures(const Texture* pDiffuse, const Texture* pNormalMap = nullptr, const Texture* pSpecular = nullptr, const Texture* pGlossiness = nullptr) = 0;
-
+	void SetNormalBoolean(bool useNormalMaps) { m_pBooleanUseNormalMaps->SetBool(useNormalMaps); };
 
 protected:
 
@@ -37,7 +37,7 @@ protected:
 	ID3DX11EffectMatrixVariable* m_pWorldVariable;
 	
 	ID3DX11EffectSamplerVariable* m_pSamplerVariable;
-
+	ID3DX11EffectScalarVariable* m_pBooleanUseNormalMaps;
 
 private:
 

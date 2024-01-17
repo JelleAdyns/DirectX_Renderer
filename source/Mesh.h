@@ -30,8 +30,10 @@ public:
 	void SetSampler(ID3D11Device* pDevice, D3D11_FILTER filter);
 
 	void SetTextures(Texture* pDiffuse, Texture* pNormalMap = nullptr, Texture* pSpecular = nullptr, Texture* pGlossiness = nullptr);
+	void SetUseNormalMaps(bool useNormalMaps) { m_pEffect->SetNormalBoolean(useNormalMaps); };
 
 	const dae::Matrix& GetWorldMatrix() const { return m_WorldMatrix; }
+	void SetWorldMatrix(const dae::Matrix& worldMatrix) { m_WorldMatrix = worldMatrix; }
 
 private:
 	EffectWrapper* m_pEffect{ nullptr };

@@ -57,15 +57,11 @@ namespace dae
 
 		if (mouseState == SDL_BUTTON(SDL_BUTTON_RIGHT))
 		{
-			if (mouseY != 0)
+			if (mouseX != 0 || mouseY != 0)
 			{
 				m_TotalPitch -= mouseY;
 				if (m_TotalPitch >= 89) m_TotalPitch = 89;
 				if (m_TotalPitch <= -89) m_TotalPitch = -89;
-				TransformForwardVector();
-			}
-			if (mouseX != 0)
-			{
 				m_TotalYaw += mouseX;
 				TransformForwardVector();
 			}
@@ -90,29 +86,31 @@ namespace dae
 
 	void Camera::HandleKeyMovement(const uint8_t* keys, float elapsedSec)
 	{
+		float speed{ (keys[SDL_SCANCODE_LSHIFT] ? m_TranslateSpeed * 3 : m_TranslateSpeed) };
+
 		if (keys[SDL_SCANCODE_W] || keys[SDL_SCANCODE_UP])
 		{
-			m_Origin += m_Forward * m_TranslateSpeed * elapsedSec;
+			m_Origin += m_Forward * elapsedSec * speed;
 		}
 		if (keys[SDL_SCANCODE_S] || keys[SDL_SCANCODE_DOWN])
 		{
-			m_Origin -= m_Forward * m_TranslateSpeed * elapsedSec;
+			m_Origin -= m_Forward * speed * elapsedSec;
 		}
 		if (keys[SDL_SCANCODE_D] || keys[SDL_SCANCODE_RIGHT])
 		{
-			m_Origin += m_Right * m_TranslateSpeed * elapsedSec;
+			m_Origin += m_Right * speed * elapsedSec;
 		}
 		if (keys[SDL_SCANCODE_A] || keys[SDL_SCANCODE_LEFT])
 		{
-			m_Origin -= m_Right * m_TranslateSpeed * elapsedSec;
+			m_Origin -= m_Right * speed * elapsedSec;
 		}
 		if (keys[SDL_SCANCODE_E])
 		{
-			m_Origin.y += m_TranslateSpeed * elapsedSec;
+			m_Origin.y += speed * elapsedSec;
 		}
 		if (keys[SDL_SCANCODE_Q])
 		{
-			m_Origin.y -= m_TranslateSpeed * elapsedSec;
+			m_Origin.y -= speed * elapsedSec;
 		}
 		if (keys[SDL_SCANCODE_Z])
 		{

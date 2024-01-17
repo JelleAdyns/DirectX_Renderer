@@ -32,7 +32,7 @@ namespace dae
 		const Vector3& GetCameraOrigin() const { return m_Origin; }
 	private:
 		const float m_Near{ 1.f };
-		const float m_Far{ 100.f };
+		const float m_Far{ 1000.f };
 
 		Vector3 m_Origin{};
 		float m_FovAngle{ 90.f };

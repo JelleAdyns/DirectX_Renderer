@@ -21,11 +21,14 @@ EffectWrapper::EffectWrapper(ID3D11Device* pDevice, const std::wstring& assetFil
 	if (!m_pSamplerVariable->IsValid()) std::wcout << L"Sampler variable not valid\n";
 
 
+	m_pBooleanUseNormalMaps = m_pEffect->GetVariableByName("gUseNormalMap")->AsScalar();
+	if (!m_pBooleanUseNormalMaps->IsValid()) std::wcout << L"UseNormalMap boolean not valid\n";
+
 }
 
 EffectWrapper::~EffectWrapper()
 {
-
+	m_pBooleanUseNormalMaps->Release();
 	m_pSamplerVariable->Release();
 	m_pWorldVariable->Release();
 	m_pWorldViewProjVariable->Release();
@@ -69,7 +72,7 @@ void EffectWrapper::SetMatrices(const dae::Matrix& worldViewProjMatrix, const da
 			arrayMatrix[col + row * numOfCols] = worldViewProjMatrix[row][col];
 		}
 	}
-	m_pWorldViewProjVariable->SetMatrix(arrayMatrix);
+	m_pWorldViewProjVariable->SetMatrix( arrayMatrix);
 
 	for (int row = 0; row < numOfRows; ++row)
 	{
